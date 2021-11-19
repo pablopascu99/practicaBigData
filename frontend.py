@@ -1,7 +1,8 @@
 import numpy as np
 import streamlit as st
+import matplotlib.pyplot as plt
+import matplotlib
 import pandas as pd
-from google.cloud import storage
 import datetime
 from enum import Enum
 import os
@@ -9,7 +10,9 @@ import json
 from streamlit_folium import folium_static
 import folium
 
-df = pd.read_csv('./datos/importePorLocalidad.csv',sep = ',')
+matplotlib.use('tkagg')
+
+df = pd.read_csv('gs://bucket-prueba-nacho/importePorLocalidad.csv',sep = ',', storage_options=({"token": "C:\Spark\grandes-volumenes-9d18b4ccbb2f.json"}))
 df.drop(df.columns[[0]], axis=1, inplace=True)
 df['CP_CLIENTE'] = df['CP_CLIENTE'].apply(lambda x: '{0:0>5}'.format(x))
 
@@ -36,3 +39,13 @@ folium.Choropleth(
 ).add_to(m)
 
 folium_static(m)
+
+datos = pd.read_csv('gs://bucket-prueba-nacho/importeMedioSector.csv', storage_options=({"token": "datos\grandes-volumenes-9d18b4ccbb2f.json"}))
+
+importe = datos['avg(IMPORTE)']
+sectores = datos['SECTOR']
+
+figura = plt.pie(importe, explode=[0, 0, 0.15, 0, 0, 0.12, 0, 0, 0, 0] , labels=sectores, shadow=True, rotatelabels=True, autopct='%1.2f%%', textprops={'color':"w"})
+imagen = plt.savefig(r'grafica_sectores.png', bbox_inches='tight', transparent=True)
+
+st.image(image=r'grafica_sectores.png')
