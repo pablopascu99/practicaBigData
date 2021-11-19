@@ -12,7 +12,7 @@ df1 = spark.read.csv("./datos/cards.csv",header=True,inferSchema=True,sep = '|')
 data = df1.toPandas()
 data['IMPORTE'] = [x.replace(',', '.') for x in data['IMPORTE']]
 data['IMPORTE'] = data['IMPORTE'].astype(float)
-data.to_csv('./datos/cardsNuevo.csv')
+data.to_csv('gs://bucket-prueba-nacho/cardsNuevo.csv', storage_options=({"token":"datos\grandes-volumenes-9d18b4ccbb2f.json"}))
 
 df = spark.read.csv("./datos/cardsNuevo.csv",header=True,inferSchema=True,sep = ',')
 importeMedioSector = df.groupBy("SECTOR").mean("IMPORTE")
