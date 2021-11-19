@@ -16,7 +16,7 @@ data.to_csv('./datos/cardsNuevo.csv')
 
 df = spark.read.csv("./datos/cardsNuevo.csv",header=True,inferSchema=True,sep = ',')
 importeMedioSector = df.groupBy("SECTOR").mean("IMPORTE")
-importeMedioSector.toPandas().to_csv('./datos/importeMedioSector.csv')
+importeMedioSector.toPandas().to_csv('gs://bucket-prueba-nacho/importeMedioSector.csv', storage_options=({"token":"datos\grandes-volumenes-9d18b4ccbb2f.json"}))
 
 #Codigos Postales
 
@@ -26,7 +26,7 @@ df3 = spark.read.csv("./datos/weather.csv",header=True,inferSchema=True,sep = ';
 importeCP = df.groupBy("CP_CLIENTE").sum("IMPORTE") 
 dfImporte = importeCP.join(df2,importeCP.CP_CLIENTE == df2.codigopostalid,"left")
 dfImporte.dropDuplicates(['CP_CLIENTE','codigopostalid']).drop("CP_CLIENTE")
-dfImporte.toPandas().dropna().to_csv('./datos/importePorLocalidad.csv')
+dfImporte.toPandas().dropna().to_csv('gs://bucket-prueba-nacho/importePorLocalidad.csv', storage_options=({"token":"datos\grandes-volumenes-9d18b4ccbb2f.json"}))
 dfx = spark.read.csv("./datos/importePorLocalidad.csv",header=True,inferSchema=True,sep = ',')
 
 #Franja horaria con mas ventas
