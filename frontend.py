@@ -43,5 +43,6 @@ importe = datos['avg(IMPORTE)']
 sectores = datos['SECTOR']
 
 
-figura = plt.pie(names=sectores, values=importe, hole= 0.65)
+figura = plt.pie(names=sectores, values=importe, hole= 0.65, title="<b><i>Importe Medio por Sector</b></i>")
+figura.update_traces(textinfo='percent', textposition='outside', hovertemplate = "Sector %{label}: <br>Importe: %{value:.2f}</br> Porcentage: %{percent}")
 st.plotly_chart(figura)
