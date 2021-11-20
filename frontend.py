@@ -1,7 +1,6 @@
 import numpy as np
 import streamlit as st
-import matplotlib.pyplot as plt
-import matplotlib
+import plotly.express as plt
 import pandas as pd
 import datetime
 from enum import Enum
@@ -9,8 +8,6 @@ import os
 import json
 from streamlit_folium import folium_static
 import folium
-
-matplotlib.use('tkagg')
 
 df = pd.read_csv('gs://bucket-prueba-nacho/importePorLocalidad.csv',sep = ',', storage_options=({"token": "C:\Spark\grandes-volumenes-9d18b4ccbb2f.json"}))
 df.drop(df.columns[[0]], axis=1, inplace=True)
@@ -45,7 +42,6 @@ datos = pd.read_csv('gs://bucket-prueba-nacho/importeMedioSector.csv', storage_o
 importe = datos['avg(IMPORTE)']
 sectores = datos['SECTOR']
 
-figura = plt.pie(importe, explode=[0, 0, 0.15, 0, 0, 0.12, 0, 0, 0, 0] , labels=sectores, shadow=True, rotatelabels=True, autopct='%1.2f%%', textprops={'color':"w"})
-imagen = plt.savefig(r'grafica_sectores.png', bbox_inches='tight', transparent=True)
 
-st.image(image=r'grafica_sectores.png')
+figura = plt.pie(names=sectores, values=importe, hole= 0.65)
+st.plotly_chart(figura)
