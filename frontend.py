@@ -9,14 +9,12 @@ import json
 from streamlit_folium import folium_static
 import folium
 
-df = pd.read_csv('gs://bucket-prueba-nacho/importePorLocalidad.csv',sep = ',', storage_options=({"token": "C:\Spark\grandes-volumenes-9d18b4ccbb2f.json"}))
+df = pd.read_csv('gs://bucket-prueba-nacho/importePorLocalidad.csv',sep = ',', storage_options=({"token": "datos\grandes-volumenes-9d18b4ccbb2f.json"}))
 df.drop(df.columns[[0]], axis=1, inplace=True)
 df['CP_CLIENTE'] = df['CP_CLIENTE'].apply(lambda x: '{0:0>5}'.format(x))
 
 with open('./datos/almeria_20.json') as f:
   states_topo = json.load(f)
-
-st.write(states_topo['objects']['almeria_wm']['geometries'][0]['properties']['COD_POSTAL'])
 
 m = folium.Map(location=[37.16, -2.33], tiles='Stamen Terrain', zoom_start=9)
 
