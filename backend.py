@@ -33,7 +33,7 @@ dfx = spark.read.csv("./datos/importePorLocalidad.csv",header=True,inferSchema=T
 
 i=df.groupBy("FRANJA_HORARIA").sum("NUM_OP")
 j=df.groupBy("FRANJA_HORARIA").sum("IMPORTE")
-k=i.join(j,i.FRANJA_HORARIA == j.FRANJA_HORARIA, "left")
+k=i.join(j,i.FRANJA_HORARIA == j.FRANJA_HORARIA, "left").drop(i.FRANJA_HORARIA)
 k.show(20)
 
 #Franja horaria con mas ventas
