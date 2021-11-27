@@ -34,11 +34,13 @@ dfImporte.dropDuplicates(['CP_CLIENTE','codigopostalid']).drop("CP_CLIENTE")
 dfImporte.toPandas().dropna().to_csv('gs://bucket-prueba-nacho/importePorLocalidad.csv', storage_options=({"token":"datos\grandes-volumenes-9d18b4ccbb2f.json"}))
 
 #Franja horaria con mas ventas
+total_importe = df.groupBy("SECTOR", "FRANJA_HORARIA").sum("IMPORTE")
+total_ops = df.groupBy("SECTOR", "FRANJA_HORARIA").sum("NUM_OP")
+datos_importe = total_importe.toPandas().sort_values(['SECTOR', 'FRANJA_HORARIA'])
+datos_operaciones = total_ops.toPandas().sort_values(['SECTOR', 'FRANJA_HORARIA'])
 
-i=df.groupBy("FRANJA_HORARIA").sum("NUM_OP")
-j=df.groupBy("FRANJA_HORARIA").sum("IMPORTE")
-k=i.join(j,i.FRANJA_HORARIA == j.FRANJA_HORARIA, "left").drop(i.FRANJA_HORARIA)
-k.toPandas().to_csv('gs://bucket-prueba-nacho/franjaHorariaVentas.csv', storage_options=({"token":"datos\grandes-volumenes-9d18b4ccbb2f.json"}))
+datos_importe.to_csv('gs://bucket-prueba-nacho/datosSectorImporte.csv', storage_options=({"token":"datos\grandes-volumenes-9d18b4ccbb2f.json"}))
+datos_operaciones.to_csv('gs://bucket-prueba-nacho/datosSectorOperaciones.csv', storage_options=({"token":"datos\grandes-volumenes-9d18b4ccbb2f.json"}))
 
 #Franja horaria con mas ventas
 '''m1=df[(df["SECTOR"]=="OCIO Y TIEMPO LIBRE")]
