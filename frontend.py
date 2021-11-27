@@ -45,7 +45,6 @@ if selected_page == pages["main"]:
   folium_static(m)
 
 elif selected_page == pages["page1"]:
-
   datos = pd.read_csv('gs://bucket-prueba-nacho/importeMedioSector.csv', storage_options=({"token": "datos\grandes-volumenes-9d18b4ccbb2f.json"}))
 
   importe = datos['avg(IMPORTE)']
@@ -61,21 +60,23 @@ elif selected_page == pages["page3"]:
   datos_grafica = datos_importe[datos_importe.SECTOR == sector]
   lista_franjas1 = []
   for i in range(len(datos_grafica.index)):
-    lista_franjas1.append(i)
-
+    franjas = ["0-2", "2-4", "4-6", "6-8", "8-10", "10-12", "12-14", "14-16", "16-18", "18-20", "20-22", "22-24"]
+    lista_franjas1.append(franjas[i])
+  
   importe = datos_grafica['sum(IMPORTE)']
   figura_imp = plt.bar(datos_grafica, x=lista_franjas1, y=importe)
-  figura_imp.update_layout(title="<b><i>Importe TOTAL por Sector por Fanja Horaria</b></i>",xaxis_title="Franja Horaria", yaxis_title="Importe")
+  figura_imp.update_layout(title="<b><i>Importe TOTAL por Sector por Fanja Horaria</b></i>",xaxis_title="Franja Horaria", yaxis_title="Importe", xaxis_type="category")
   figura_imp.update_traces(hovertemplate="Franja Horaria: %{x} <br> Importe: %{y}</br>")
   st.plotly_chart(figura_imp)
-
+  
   datos_operaciones = pd.read_csv('gs://bucket-prueba-nacho/datosSectorOperaciones.csv', storage_options=({"token":"datos\grandes-volumenes-9d18b4ccbb2f.json"}), encoding="utf8")
   datos_grafica_2 = datos_operaciones[datos_importe.SECTOR == sector]
   lista_franjas2 = []
   for i in range(len(datos_grafica_2.index)):
-    lista_franjas2.append(i)
+    franjas2 = ["0-2", "2-4", "4-6", "6-8", "8-10", "10-12", "12-14", "14-16", "16-18", "18-20", "20-22", "22-24"]
+    lista_franjas2.append(franjas2[i])
   operaciones = datos_grafica_2['sum(NUM_OP)']
   figura_ops = plt.bar(datos_grafica_2, x=lista_franjas2, y=operaciones)
-  figura_ops.update_layout(title="<b><i>Operaciones TOTALES por Sector por Fanja Horaria</b></i>",xaxis_title="Franja Horaria", yaxis_title="Operaciones")
+  figura_ops.update_layout(title="<b><i>Operaciones TOTALES por Sector por Fanja Horaria</b></i>",xaxis_title="Franja Horaria", yaxis_title="Operaciones", xaxis_type="category")
   figura_ops.update_traces(hovertemplate="Franja Horaria: %{x} <br> Operaciones: %{y}</br>")
   st.plotly_chart(figura_ops)
