@@ -166,7 +166,7 @@ elif selected_page == pages["page4"]:
   st.plotly_chart(figura_ops)
 
   dia = st.selectbox("Seleccione un dia top en ventas", ['2015-01-03','2015-01-05','2015-01-02','2015-12-23','2015-12-30','2015-11-27','2015-07-01','2015-12-29','2015-11-28','2015-12-22'])
-  datos_dias_rent_tot = pd.read_csv('C:\spark\practicaBigData-prueba2\datos\diasConMasOperTotal.csv',sep = ',')
+  datos_dias_rent_tot = pd.read_csv('.\datos\diasConMasOperTotal.csv',sep = ',')
   datos_dia = datos_dias_rent_tot[datos_dias_rent_tot.DIA == dia]
 
   lista_franja = datos_dia['FRANJA_HORARIA']
