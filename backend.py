@@ -6,7 +6,7 @@ from google.cloud import storage
 sc = SparkContext('local')
 spark = SparkSession(sc)
 
-#Importe medio por sector
+#Importe total por sector
 
 data = pd.read_csv('gs://bucket-prueba-nacho/cards.csv', storage_options=({"token":"datos\grandes-volumenes-9d18b4ccbb2f.json"}), sep= '|')
 data['IMPORTE'] = [x.replace(',', '.') for x in data['IMPORTE']]
@@ -17,8 +17,8 @@ data.to_csv('gs://bucket-prueba-nacho/cardsNuevo.csv', storage_options=({"token"
 df = pd.read_csv("gs://bucket-prueba-nacho/cardsNuevo.csv", storage_options=({"token":"datos\grandes-volumenes-9d18b4ccbb2f.json"}), sep = ',')
 df = spark.createDataFrame(df)
 df.show()
-importeMedioSector = df.groupBy("SECTOR").mean("IMPORTE")
-importeMedioSector.toPandas().to_csv('gs://bucket-prueba-nacho/importeMedioSector.csv', storage_options=({"token":"datos\grandes-volumenes-9d18b4ccbb2f.json"}))
+importeTotalSector = df.groupBy("SECTOR").sum("IMPORTE")
+importeTotalSector.toPandas().to_csv('gs://bucket-prueba-nacho/importeTotalSector.csv', storage_options=({"token":"datos\grandes-volumenes-9d18b4ccbb2f.json"}))
 
 #Codigos Postales
 
@@ -41,6 +41,34 @@ datos_operaciones = total_ops.toPandas().sort_values(['SECTOR', 'FRANJA_HORARIA'
 
 datos_importe.to_csv('gs://bucket-prueba-nacho/datosSectorImporte.csv', storage_options=({"token":"datos\grandes-volumenes-9d18b4ccbb2f.json"}))
 datos_operaciones.to_csv('gs://bucket-prueba-nacho/datosSectorOperaciones.csv', storage_options=({"token":"datos\grandes-volumenes-9d18b4ccbb2f.json"}))
+
+#Importe total de los comercios con transacciones locales (todos los sectores juntos)
+
+importeLocal = df[(df["CP_CLIENTE"]==df["CP_COMERCIO"])].groupBy("CP_COMERCIO").sum("IMPORTE").toPandas()
+importeLocal.to_csv('gs://bucket-prueba-nacho/importeLocal.csv', storage_options=({"token":"datos\grandes-volumenes-9d18b4ccbb2f.json"}))
+
+#Importe total de los comercios con transacciones locales en cada sector
+
+alimentacion=df[df["CP_CLIENTE"]==df["CP_COMERCIO"]].filter((df.SECTOR  == "ALIMENTACION")).groupBy("CP_COMERCIO").sum("IMPORTE").toPandas().sort_values('CP_COMERCIO').drop(columns=['CP_COMERCIO'])
+alimentacion.to_csv('gs://bucket-prueba-nacho/localAlimentacion.csv', index=False, storage_options=({"token":"datos\grandes-volumenes-9d18b4ccbb2f.json"}))
+auto=df[df["CP_CLIENTE"]==df["CP_COMERCIO"]].filter((df.SECTOR  == "AUTO")).groupBy("CP_COMERCIO").sum("IMPORTE").toPandas().sort_values('CP_COMERCIO').drop(columns=['CP_COMERCIO'])
+auto.to_csv('gs://bucket-prueba-nacho/localAuto.csv', index=False, storage_options=({"token":"datos\grandes-volumenes-9d18b4ccbb2f.json"}))
+restauracion=df[df["CP_CLIENTE"]==df["CP_COMERCIO"]].filter((df.SECTOR  == "RESTAURACION")).groupBy("CP_COMERCIO").sum("IMPORTE").toPandas().sort_values('CP_COMERCIO').drop(columns=['CP_COMERCIO'])
+restauracion.to_csv('gs://bucket-prueba-nacho/localRestauracion.csv', index=False, storage_options=({"token":"datos\grandes-volumenes-9d18b4ccbb2f.json"}))
+belleza=df[df["CP_CLIENTE"]==df["CP_COMERCIO"]].filter((df.SECTOR  == "BELLEZA")).groupBy("CP_COMERCIO").sum("IMPORTE").toPandas().sort_values('CP_COMERCIO').drop(columns=['CP_COMERCIO'])
+belleza.to_csv('gs://bucket-prueba-nacho/localBelleza.csv', index=False, storage_options=({"token":"datos\grandes-volumenes-9d18b4ccbb2f.json"}))
+otros=df[df["CP_CLIENTE"]==df["CP_COMERCIO"]].filter((df.SECTOR  == "OTROS")).groupBy("CP_COMERCIO").sum("IMPORTE").toPandas().sort_values('CP_COMERCIO').drop(columns=['CP_COMERCIO'])
+otros.to_csv('gs://bucket-prueba-nacho/localOtros.csv', index=False, storage_options=({"token":"datos\grandes-volumenes-9d18b4ccbb2f.json"}))
+ocio=df[df["CP_CLIENTE"]==df["CP_COMERCIO"]].filter((df.SECTOR  == "OCIO Y TIEMPO LIBRE")).groupBy("CP_COMERCIO").sum("IMPORTE").toPandas().sort_values('CP_COMERCIO').drop(columns=['CP_COMERCIO'])
+ocio.to_csv('gs://bucket-prueba-nacho/localOcio.csv', index=False, storage_options=({"token":"datos\grandes-volumenes-9d18b4ccbb2f.json"}))
+hogar=df[df["CP_CLIENTE"]==df["CP_COMERCIO"]].filter((df.SECTOR  == "HOGAR")).groupBy("CP_COMERCIO").sum("IMPORTE").toPandas().sort_values('CP_COMERCIO').drop(columns=['CP_COMERCIO'])
+hogar.to_csv('gs://bucket-prueba-nacho/localHogar.csv', index=False, storage_options=({"token":"datos\grandes-volumenes-9d18b4ccbb2f.json"}))
+salud=df[df["CP_CLIENTE"]==df["CP_COMERCIO"]].filter((df.SECTOR  == "SALUD")).groupBy("CP_COMERCIO").sum("IMPORTE").toPandas().sort_values('CP_COMERCIO').drop(columns=['CP_COMERCIO'])
+salud.to_csv('gs://bucket-prueba-nacho/localSalud.csv', index=False, storage_options=({"token":"datos\grandes-volumenes-9d18b4ccbb2f.json"}))
+moda=df[df["CP_CLIENTE"]==df["CP_COMERCIO"]].filter((df.SECTOR  == "MODA Y COMPLEMENTOS")).groupBy("CP_COMERCIO").sum("IMPORTE").toPandas().sort_values('CP_COMERCIO').drop(columns=['CP_COMERCIO'])
+moda.to_csv('gs://bucket-prueba-nacho/localModa.csv', index=False, storage_options=({"token":"datos\grandes-volumenes-9d18b4ccbb2f.json"}))
+tecno=df[df["CP_CLIENTE"]==df["CP_COMERCIO"]].filter((df.SECTOR  == "TECNOLOGIA")).groupBy("CP_COMERCIO").sum("IMPORTE").toPandas().sort_values('CP_COMERCIO')
+tecno.to_csv('gs://bucket-prueba-nacho/localTecnologia.csv', index=False, storage_options=({"token":"datos\grandes-volumenes-9d18b4ccbb2f.json"}))
 
 #Franja horaria con mas ventas
 '''m1=df[(df["SECTOR"]=="OCIO Y TIEMPO LIBRE")]
