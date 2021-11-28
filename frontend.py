@@ -17,6 +17,7 @@ pages = {
   "page2": "Importes en transacciones locales",
   "page3": "Ventas en Franjas Horarias",
   "page4": "Dias mas rentables del año",
+  "page5": "Alteraciones según agentes climáticos",
 }
   
 selected_page = st.sidebar.radio("Selecciona la página", pages.values())
@@ -153,7 +154,7 @@ elif selected_page == pages["page3"]:
 
 elif selected_page == pages["page4"]:
   sector = st.selectbox("Seleccione un Sector", ['AUTO', 'ALIMENTACION', 'BELLEZA', 'HOGAR', 'MODA Y COMPLEMENTOS', 'OCIO Y TIEMPO LIBRE', 'OTROS', 'RESTAURACION', 'SALUD', 'TECNOLOGIA'])
-  datos_dias_rent = pd.read_csv('.\datos\diasConMasOperaciones.csv',sep = ',')
+  datos_dias_rent = pd.read_csv('gs://bucket-prueba-nacho/diasConMasOperaciones.csv', storage_options=({"token":"datos\grandes-volumenes-9d18b4ccbb2f.json"}), encoding="utf8")
   datos_sector = datos_dias_rent[datos_dias_rent.SECTOR == sector]
 
   dias_saturados = datos_sector['DIA']
@@ -163,3 +164,53 @@ elif selected_page == pages["page4"]:
   figura_ops.update_layout(title="<b><i>Top de dias con mayores ventas</b></i>",xaxis_title="Dias", yaxis_title="Operaciones", xaxis_type="category")
   figura_ops.update_traces(hovertemplate="Dia: %{x} <br> Operaciones: %{y}</br>")
   st.plotly_chart(figura_ops)
+
+elif selected_page == pages["page5"]:
+  
+  op = {
+    "op1": "Precipitaciones",
+    "op2": "Temperatura maxima",
+    "op3": "Dias aleatorios",
+  }
+  opcion = st.selectbox("Selecciona una opcion", op.values())
+  df_precip = pd.read_csv('gs://bucket-prueba-nacho/precipMax.csv', storage_options=({"token":"datos\grandes-volumenes-9d18b4ccbb2f.json"}), encoding="utf8")
+  df_temp = pd.read_csv('gs://bucket-prueba-nacho/tempMax.csv', storage_options=({"token":"datos\grandes-volumenes-9d18b4ccbb2f.json"}), encoding="utf8")
+  df_diasAl = pd.read_csv('gs://bucket-prueba-nacho/importesDiaAleatorio.csv', storage_options=({"token":"datos\grandes-volumenes-9d18b4ccbb2f.json"}), encoding="utf8")
+
+  if opcion == op["op1"]:
+    dias = df_precip['DIA']
+    precip = df_precip['Precip']
+    imp = df_precip['sum(IMPORTE)']
+
+    figura_ops = plt.bar(df_precip, x=dias, y=imp)
+    figura_ops.update_layout(title="<b><i>Transacciones en dias con mas precipitaciones</b></i>",xaxis_title="Dias", yaxis_title="Importes", xaxis_type="category")
+    figura_ops.update_traces(hovertemplate="Dia: %{x} <br> Importes: %{y}</br>")
+    st.plotly_chart(figura_ops)
+
+    figura_ops2 = plt.bar(df_precip, x=dias, y=precip)
+    figura_ops2.update_layout(title="<b><i>Dias con mas precipitaciones</b></i>",xaxis_title="Dias", yaxis_title="Precipitaciones", xaxis_type="category")
+    figura_ops2.update_traces(hovertemplate="Dia: %{x} <br> Precipitaciones: %{y}</br>")
+    st.plotly_chart(figura_ops2)
+
+  elif opcion == op["op2"]:
+    dias = df_temp['DIA']
+    temp = df_temp['TMax']
+    imp = df_temp['sum(IMPORTE)']
+
+    figura_ops = plt.bar(df_temp, x=dias, y=imp)
+    figura_ops.update_layout(title="<b><i>Transacciones en dias con mayor temperatura</b></i>",xaxis_title="Dias", yaxis_title="Importes", xaxis_type="category")
+    figura_ops.update_traces(hovertemplate="Dia: %{x} <br> Importes: %{y}</br>")
+    st.plotly_chart(figura_ops)
+
+    figura_ops2 = plt.bar(df_temp, x=dias, y=temp)
+    figura_ops2.update_layout(title="<b><i>Dias con mayor temperatura</b></i>",xaxis_title="Dias", yaxis_title="Temperatura", xaxis_type="category")
+    figura_ops2.update_traces(hovertemplate="Dia: %{x} <br> Temperatura: %{y}</br>")
+    st.plotly_chart(figura_ops2)
+  elif opcion == op["op3"]:
+    dias = df_diasAl['DIA']
+    imp = df_diasAl['sum(IMPORTE)']
+
+    figura_ops = plt.bar(df_diasAl, x=dias, y=imp)
+    figura_ops.update_layout(title="<b><i>Transacciones en dias aleatorios</b></i>",xaxis_title="Dias", yaxis_title="Importes", xaxis_type="category")
+    figura_ops.update_traces(hovertemplate="Dia: %{x} <br> Importes: %{y}</br>")
+    st.plotly_chart(figura_ops)

@@ -70,13 +70,21 @@ moda.to_csv('gs://bucket-prueba-nacho/localModa.csv', index=False, storage_optio
 tecno=df[df["CP_CLIENTE"]==df["CP_COMERCIO"]].filter((df.SECTOR  == "TECNOLOGIA")).groupBy("CP_COMERCIO").sum("IMPORTE").toPandas().sort_values('CP_COMERCIO')
 tecno.to_csv('gs://bucket-prueba-nacho/localTecnologia.csv', index=False, storage_options=({"token":"datos\grandes-volumenes-9d18b4ccbb2f.json"}))
 
-#Franja horaria con mas ventas
-'''m1=df[(df["SECTOR"]=="OCIO Y TIEMPO LIBRE")]
-m=m1.groupBy("DIA").sum("NUM_OP") 
-k=df3.join(m,df3.FECHA == m.DIA, "left").select(m["DIA"],df3["Precip"],m["sum(NUM_OP)"])
-k.groupBy("DIA").sum("sum(NUM_OP)")
-k1=k[(k["Precip"]>=5)]
-k1.show(30)'''
+#10 dias con mas precipitaciones e importes totales
+dataWeather=df.groupBy("DIA").sum("IMPORTE")
+precipMax=df3.join(dataWeather,df3.FECHA == dataWeather.DIA, "left").select(dataWeather["DIA"],df3["Precip"],dataWeather["sum(IMPORTE)"]) 
+precipMax=precipMax.toPandas().nlargest(10, "Precip")
+precipMax.to_csv('gs://bucket-prueba-nacho/precipMax.csv', index=False, storage_options=({"token":"datos\grandes-volumenes-9d18b4ccbb2f.json"}))
+
+#10 dias con mas temperatura e importes totales
+tempMax=df3.join(dataWeather,df3.FECHA == dataWeather.DIA, "left").select(dataWeather["DIA"],df3["TMax"],dataWeather["sum(IMPORTE)"]) 
+tempMax=tempMax.toPandas().nlargest(10, "TMax")
+tempMax.to_csv('gs://bucket-prueba-nacho/tempMax.csv', index=False, storage_options=({"token":"datos\grandes-volumenes-9d18b4ccbb2f.json"}))
+
+#10 dias aleatorios e importes totales
+dfA=dataWeather.select(dataWeather["DIA"],dataWeather["sum(IMPORTE)"]).toPandas()
+dfAleatorio = dfA.sample(10)
+dfAleatorio.to_csv('gs://bucket-prueba-nacho/importesDiaAleatorio.csv', index=False, storage_options=({"token":"datos\grandes-volumenes-9d18b4ccbb2f.json"}))
 
 #Top de 10 Dias con mayor numero de transaciones
 # Segun cada sector
