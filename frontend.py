@@ -23,7 +23,17 @@ pages = {
 selected_page = st.sidebar.radio("Selecciona la página", pages.values())
 
 if selected_page == pages["main"]:
-  st.write("Inicio")
+  st.markdown("<h1 style='font-size:32px;font-weight:bold;font-style:italic'>Análisis de datos de transacciones con tarjeta de crédito usando Spark</h1>", unsafe_allow_html=True)
+  st.markdown("<h2 style='font-size:26px;font-weight:bold;font-style:italic'>Descripción Del Proyecto", unsafe_allow_html=True)
+  st.markdown("<p>Desarrollo de la aplicación hecha a partir de información/dataset de 2015 dada por el banco Billetajo, un banco de Almería y del tratamiento de los mismos para a partir de ellos procesar información que se mostrará de forma más visual a partir de la biblioteca Streamlit, y así proponer un sistema de análisis de datos mediante la KPIs que nos ayudarán a entender los problemas y soluciones.<br>Además disponemos de un dataset con los valores climatológicos de Almería en el año 2015 y adicionalmente hemos añadido dos dataset más con valores geográficos y correspondencias de nombres con códigos postales de toda España.</p>", unsafe_allow_html=True)
+  st.markdown("<h2 style='font-size:26px;font-weight:bold;font-style:italic'>Herramientas Usadas", unsafe_allow_html=True)
+  st.image("python.png", width=125)
+  st.image("spark.png", width=225)
+  st.image("streamlit.png", width=400)
+  st.markdown("<h2 style='font-size:26px;font-weight:bold;font-style:italic'>Autores", unsafe_allow_html=True)
+  st.markdown("&#9733; Pablo Pascual García",unsafe_allow_html=True)
+  st.markdown("&#9733; Solange Anita Victoria Roman Atao",unsafe_allow_html=True)
+  st.markdown("&#9733; Jose Ignacio Del Valle Bustillo",unsafe_allow_html=True)
 
 elif selected_page == pages["page1"]:
   
