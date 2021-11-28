@@ -161,7 +161,19 @@ elif selected_page == pages["page4"]:
   operaciones = datos_sector['sum(NUM_OP)']
 
   figura_ops = plt.bar(datos_sector, x=dias_saturados, y=operaciones)
-  figura_ops.update_layout(title="<b><i>Top de dias con mayores ventas</b></i>",xaxis_title="Dias", yaxis_title="Operaciones", xaxis_type="category")
+  figura_ops.update_layout(title="<b><i>Top de los 10 dias con mayores ventas segun el sector selecionado</b></i>",xaxis_title="Dias", yaxis_title="Operaciones", xaxis_type="category")
+  figura_ops.update_traces(hovertemplate="Dia: %{x} <br> Operaciones: %{y}</br>")
+  st.plotly_chart(figura_ops)
+
+  dia = st.selectbox("Seleccione un dia top en ventas", ['2015-01-03','2015-01-05','2015-01-02','2015-12-23','2015-12-30','2015-11-27','2015-07-01','2015-12-29','2015-11-28','2015-12-22'])
+  datos_dias_rent_tot = pd.read_csv('C:\spark\practicaBigData-prueba2\datos\diasConMasOperTotal.csv',sep = ',')
+  datos_dia = datos_dias_rent_tot[datos_dias_rent_tot.DIA == dia]
+
+  lista_franja = datos_dia['FRANJA_HORARIA']
+  operaciones = datos_dia['sum(NUM_OP)']
+
+  figura_ops = plt.bar(datos_dia, x=lista_franja, y=operaciones)
+  figura_ops.update_layout(title="<b><i>Franja horaria con mayor saturacion segun el dia top seleccionado</b></i>",xaxis_title="Franja Horaria", yaxis_title="Operaciones", xaxis_type="category")
   figura_ops.update_traces(hovertemplate="Dia: %{x} <br> Operaciones: %{y}</br>")
   st.plotly_chart(figura_ops)
 
