@@ -5,27 +5,72 @@ from pyspark.context import SparkContext
 from pyspark.sql.session import SparkSession
 from pyspark.sql import functions as F
 import pandas as pd
+import numpy as np
 import sys
+import plotly.express as px
 
 sc = SparkContext('local')
 spark = SparkSession(sc)
 
-df2 = spark.read.csv("./datos/codigoPostalCoordenadas.csv",header=True,inferSchema=True,sep = ';')
-df3 = spark.read.csv("./datos/weather.csv",header=True,inferSchema=True,sep = ';')
-df1 = spark.read.csv("./datos/cards.csv",header=True,inferSchema=True,sep = '|')
+df2 = spark.read.csv("C:\Program Files\Spark\PracticaBigData\datos\codigoPostalCoordenadas.csv",header=True,inferSchema=True,sep = ';')
+df3 = spark.read.csv("C:\Program Files\Spark\PracticaBigData\datos\weather.csv",header=True,inferSchema=True,sep = ';')
+df1 = spark.read.csv("C:\Program Files\Spark\PracticaBigData\datos\cardsNuevo.csv",header=True,inferSchema=True,sep = ',')
 
-#Numero de operaciones que se destina en alimentacion en los tiempos de maxima humedad 
 
-m1=df1[(df1["SECTOR"]=="ALIMENTACION")]
-m=m1.groupBy("DIA").sum("NUM_OP") 
-k=df3.join(m,df3.FECHA == m.DIA, "left").select(m["DIA"] ,df3["HumMax"],m["sum(NUM_OP)"])
-k.groupBy("DIA").sum("sum(NUM_OP)")
-k.show(30) 
+print(df1[(df1["CP_CLIENTE"]==df1["CP_COMERCIO"])].groupBy("CP_COMERCIO").sum("IMPORTE").toPandas())
+'''lista=[]
 
-#Gasto de Belleza en verano(julio y agosto)
+alimentacion=df1[df1["CP_CLIENTE"]==df1["CP_COMERCIO"]].filter((df1.SECTOR  == "ALIMENTACION")).groupBy("CP_COMERCIO").sum("IMPORTE").toPandas().sort_values('CP_COMERCIO').drop(columns=['CP_COMERCIO'])
+alimentacion=alimentacion.to_numpy().ravel().tolist()
+lista.append(alimentacion)
 
-df1[(df1["SECTOR"]=="BELLEZA")].where("DIA BETWEEN '2015-07-01' AND '2015-09-01'").groupBy("DIA").sum("NUM_OP").orderBy("DIA").show(10000) 
+auto=df1[df1["CP_CLIENTE"]==df1["CP_COMERCIO"]].filter((df1.SECTOR  == "AUTO")).groupBy("CP_COMERCIO").sum("IMPORTE").toPandas().sort_values('CP_COMERCIO').drop(columns=['CP_COMERCIO'])
+auto=auto.to_numpy().ravel().tolist()
+lista.append(auto)
 
-#Comparativa de lo que gastan cada sector en el mes de diciembre en
+restauracion=df1[df1["CP_CLIENTE"]==df1["CP_COMERCIO"]].filter((df1.SECTOR  == "RESTAURACION")).groupBy("CP_COMERCIO").sum("IMPORTE").toPandas().sort_values('CP_COMERCIO').drop(columns=['CP_COMERCIO'])
+restauracion=restauracion.to_numpy().ravel().tolist()
+lista.append(restauracion)
 
-df1.where("DIA BETWEEN '2015-12-01' AND '2015-12-31'").groupBy("SECTOR", "DIA").sum("NUM_OP").orderBy("SECTOR", "DIA").show(10000)
+belleza=df1[df1["CP_CLIENTE"]==df1["CP_COMERCIO"]].filter((df1.SECTOR  == "BELLEZA")).groupBy("CP_COMERCIO").sum("IMPORTE").toPandas().sort_values('CP_COMERCIO').drop(columns=['CP_COMERCIO'])
+belleza=belleza.to_numpy().ravel().tolist()
+lista.append(belleza)
+
+otros=df1[df1["CP_CLIENTE"]==df1["CP_COMERCIO"]].filter((df1.SECTOR  == "OTROS")).groupBy("CP_COMERCIO").sum("IMPORTE").toPandas().sort_values('CP_COMERCIO').drop(columns=['CP_COMERCIO'])
+otros=otros.to_numpy().ravel().tolist()
+lista.append(otros)
+
+ocio=df1[df1["CP_CLIENTE"]==df1["CP_COMERCIO"]].filter((df1.SECTOR  == "OCIO Y TIEMPO LIBRE")).groupBy("CP_COMERCIO").sum("IMPORTE").toPandas().sort_values('CP_COMERCIO').drop(columns=['CP_COMERCIO'])
+ocio=ocio.to_numpy().ravel().tolist()
+lista.append(ocio)
+
+hogar=df1[df1["CP_CLIENTE"]==df1["CP_COMERCIO"]].filter((df1.SECTOR  == "HOGAR")).groupBy("CP_COMERCIO").sum("IMPORTE").toPandas().sort_values('CP_COMERCIO').drop(columns=['CP_COMERCIO'])
+hogar=hogar.to_numpy().ravel().tolist()
+lista.append(hogar)
+
+salud=df1[df1["CP_CLIENTE"]==df1["CP_COMERCIO"]].filter((df1.SECTOR  == "SALUD")).groupBy("CP_COMERCIO").sum("IMPORTE").toPandas().sort_values('CP_COMERCIO').drop(columns=['CP_COMERCIO'])
+salud=salud.to_numpy().ravel().tolist()
+lista.append(salud)
+
+moda=df1[df1["CP_CLIENTE"]==df1["CP_COMERCIO"]].filter((df1.SECTOR  == "MODA Y COMPLEMENTOS")).groupBy("CP_COMERCIO").sum("IMPORTE").toPandas().sort_values('CP_COMERCIO').drop(columns=['CP_COMERCIO'])
+moda=moda.to_numpy().ravel().tolist()
+lista.append(moda)
+tecno=df1[df1["CP_CLIENTE"]==df1["CP_COMERCIO"]].filter((df1.SECTOR  == "TECNOLOGIA")).groupBy("CP_COMERCIO").sum("IMPORTE").toPandas().sort_values('CP_COMERCIO')
+t=tecno.append({'CP_COMERCIO' : 4002 , 'sum(IMPORTE)' : 0}, ignore_index=True).sort_values('CP_COMERCIO').drop(columns=['CP_COMERCIO'])
+t=t.to_numpy().ravel().tolist()
+lista.append(t)
+
+fig = px.imshow(lista,
+                labels=dict(x="Day of Week", y="SECTOR", color="IMPORTE"),
+                x=['4001', '4002', '4003', '4004', '4005', '4006', '4007', '4008', '4009'],
+                y=['AUTO', 'RESTAURACION','BELLEZA','OTROS','OCIO Y TIEMPO LIBRE','HOGAR','SALUD','MODA Y COMPLEMENTOS','TECNOLOGIA']
+               )
+fig.update_xaxes(side="top")
+fig.show()
+fig2 = px.imshow(lista,
+                labels=dict(x="Day of Week", y="SECTOR", color="IMPORTE"),
+                x=['4001', '4002', '4003', '4004', '4005', '4006', '4007', '4008', '4009'],
+                y=['ALIMENTACION','AUTO', 'RESTAURACION','BELLEZA','OTROS','OCIO Y TIEMPO LIBRE','HOGAR','SALUD','MODA Y COMPLEMENTOS']
+               )
+fig2.update_xaxes(side="top")
+fig2.show()'''
