@@ -44,7 +44,7 @@ elif selected_page == pages["page1"]:
   df.drop(df.columns[[0]], axis=1, inplace=True)
   df['CP_CLIENTE'] = df['CP_CLIENTE'].apply(lambda x: '{0:0>5}'.format(x))
 
-  components.html("<br><br><br><br><b><i>Importe total de los comercios con transacciones locales en cada sector</b></i>")
+  components.html("<br><br><br><br><b><i>Importe total de los comercios en las localidades</b></i>")
 
   with open('./datos/almeria_20.json') as f:
     states_topo = json.load(f)
