@@ -16,6 +16,7 @@ pages = {
   "page1": "Mayores importes por localidad y sectores",
   "page2": "Importes en transacciones locales",
   "page3": "Ventas en Franjas Horarias",
+  "page4": "Dias mas rentables del año",
 }
   
 selected_page = st.sidebar.radio("Selecciona la página", pages.values())
@@ -148,4 +149,17 @@ elif selected_page == pages["page3"]:
   figura_ops = plt.bar(datos_grafica_2, x=lista_franjas2, y=operaciones)
   figura_ops.update_layout(title="<b><i>Operaciones TOTALES por Sector por Franja Horaria</b></i>",xaxis_title="Franja Horaria", yaxis_title="Operaciones", xaxis_type="category")
   figura_ops.update_traces(hovertemplate="Franja Horaria: %{x} <br> Operaciones: %{y}</br>")
+  st.plotly_chart(figura_ops)
+
+elif selected_page == pages["page4"]:
+  sector = st.selectbox("Seleccione un Sector", ['AUTO', 'ALIMENTACION', 'BELLEZA', 'HOGAR', 'MODA Y COMPLEMENTOS', 'OCIO Y TIEMPO LIBRE', 'OTROS', 'RESTAURACION', 'SALUD', 'TECNOLOGIA'])
+  datos_dias_rent = pd.read_csv('.\datos\diasConMasOperaciones.csv',sep = ',')
+  datos_sector = datos_dias_rent[datos_dias_rent.SECTOR == sector]
+
+  dias_saturados = datos_sector['DIA']
+  operaciones = datos_sector['sum(NUM_OP)']
+
+  figura_ops = plt.bar(datos_sector, x=dias_saturados, y=operaciones)
+  figura_ops.update_layout(title="<b><i>Top de dias con mayores ventas</b></i>",xaxis_title="Dias", yaxis_title="Operaciones", xaxis_type="category")
+  figura_ops.update_traces(hovertemplate="Dia: %{x} <br> Operaciones: %{y}</br>")
   st.plotly_chart(figura_ops)

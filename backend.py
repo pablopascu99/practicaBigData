@@ -77,3 +77,18 @@ k=df3.join(m,df3.FECHA == m.DIA, "left").select(m["DIA"],df3["Precip"],m["sum(NU
 k.groupBy("DIA").sum("sum(NUM_OP)")
 k1=k[(k["Precip"]>=5)]
 k1.show(30)'''
+
+#Top de 10 Dias con mayor numero de transaciones
+# Segun cada sector
+ali=df[(df["SECTOR"]=="ALIMENTACION")].groupBy("SECTOR","DIA").sum("NUM_OP").sort("sum(NUM_OP)",ascending=False).limit(10)
+hog=df[(df["SECTOR"]=="HOGAR")].groupBy("SECTOR","DIA").sum("NUM_OP").sort("sum(NUM_OP)",ascending=False).limit(10)
+res=df[(df["SECTOR"]=="RESTAURACION")].groupBy("SECTOR","DIA").sum("NUM_OP").sort("sum(NUM_OP)",ascending=False).limit(10)
+aut=df[(df["SECTOR"]=="AUTO")].groupBy("SECTOR","DIA").sum("NUM_OP").sort("sum(NUM_OP)",ascending=False).limit(10)
+otr=df[(df["SECTOR"]=="OTROS")].groupBy("SECTOR","DIA").sum("NUM_OP").sort("sum(NUM_OP)",ascending=False).limit(10)
+sal=df[(df["SECTOR"]=="SALUD")].groupBy("SECTOR","DIA").sum("NUM_OP").sort("sum(NUM_OP)",ascending=False).limit(10)
+ocio=df[(df["SECTOR"]=="OCIO Y TIEMPO LIBRE")].groupBy("SECTOR","DIA").sum("NUM_OP").sort("sum(NUM_OP)",ascending=False).limit(10)
+mod=df[(df["SECTOR"]=="MODA Y COMPLEMENTOS")].groupBy("SECTOR","DIA").sum("NUM_OP").sort("sum(NUM_OP)",ascending=False).limit(10)
+tec=df[(df["SECTOR"]=="TECNOLOGIA")].groupBy("SECTOR","DIA").sum("NUM_OP").sort("sum(NUM_OP)",ascending=False).limit(10)
+bel=df[(df["SECTOR"]=="BELLEZA")].groupBy("SECTOR","DIA").sum("NUM_OP").sort("sum(NUM_OP)",ascending=False).limit(10)
+total=hog.union(ali).union(res).union(aut).union(otr).union(sal).union(ocio).union(mod).union(tec).union(bel).sort("SECTOR")
+total.toPandas().to_csv('gs://bucket-prueba-nacho/diasConMasOperaciones.csv', storage_options=({"token":"datos\grandes-volumenes-9d18b4ccbb2f.json"}))
