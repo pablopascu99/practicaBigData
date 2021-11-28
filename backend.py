@@ -16,11 +16,10 @@ data.to_csv('gs://bucket-prueba-nacho/cardsNuevo.csv', storage_options=({"token"
 
 df = pd.read_csv("gs://bucket-prueba-nacho/cardsNuevo.csv", storage_options=({"token":"datos\grandes-volumenes-9d18b4ccbb2f.json"}), sep = ',')
 df = spark.createDataFrame(df)
-df.show()
 importeTotalSector = df.groupBy("SECTOR").sum("IMPORTE")
 importeTotalSector.toPandas().to_csv('gs://bucket-prueba-nacho/importeTotalSector.csv', storage_options=({"token":"datos\grandes-volumenes-9d18b4ccbb2f.json"}))
 
-#Codigos Postales
+#Importe total de los comercios en las localidades
 
 df2 = pd.read_csv("gs://bucket-prueba-nacho/codigoPostalCoordenadas.csv",sep = ';', storage_options=({"token":"datos\grandes-volumenes-9d18b4ccbb2f.json"}))
 df3 = pd.read_csv("gs://bucket-prueba-nacho/weather.csv",sep = ';', storage_options=({"token":"datos\grandes-volumenes-9d18b4ccbb2f.json"}))
