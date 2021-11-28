@@ -92,3 +92,10 @@ tec=df[(df["SECTOR"]=="TECNOLOGIA")].groupBy("SECTOR","DIA").sum("NUM_OP").sort(
 bel=df[(df["SECTOR"]=="BELLEZA")].groupBy("SECTOR","DIA").sum("NUM_OP").sort("sum(NUM_OP)",ascending=False).limit(10)
 total=hog.union(ali).union(res).union(aut).union(otr).union(sal).union(ocio).union(mod).union(tec).union(bel).sort("SECTOR")
 total.toPandas().to_csv('gs://bucket-prueba-nacho/diasConMasOperaciones.csv', storage_options=({"token":"datos\grandes-volumenes-9d18b4ccbb2f.json"}))
+
+#Top 10 dias con mayor saturacion entre todos los sectores
+li=["2015-01-03","2015-01-05","2015-01-02","2015-12-23","2015-12-30","2015-11-27","2015-07-01","2015-12-29","2015-11-28","2015-12-22"]
+
+m=df.filter(df.DIA.isin(li)).groupBy("DIA","FRANJA_HORARIA").sum("NUM_OP")
+n=m.orderBy("DIA", "FRANJA_HORARIA")
+n.toPandas().to_csv('gs://bucket-prueba-nacho/diasConMasOperTotal.csv', storage_options=({"token":"datos\grandes-volumenes-9d18b4ccbb2f.json"}))
